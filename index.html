@@ -15,7 +15,9 @@
 
 <body>
 
-    <h2>Compiling the Kernel for PowerPC Architecture:</h2>
+    <h1>Kernel Compilation and QEMU Setup</h1>
+
+    <h3>Compiling the Kernel for PowerPC Architecture:</h3>
     <pre>
     <code>
 ARCH=powerpc make pseries_le_defconfig
@@ -26,17 +28,17 @@ ARCH=powerpc make pseries_le_defconfig
         <li><code>make pseries_le_defconfig:</code> Uses the pseries_le_defconfig configuration file to initialize the kernel configuration for the PowerPC pSeries (64-bit little-endian) platform.</li>
     </ul>
 
-    <h2>Customizing Kernel Configuration:</h2>
+    <h3>Customizing Kernel Configuration:</h3>
     <pre>
     <code>
 make menuconfig
     </code>
     </pre>
     <ul>
-        <li><code>make menuconfig:</code> Opens a text-based menu interface to customize the kernel configuration. The user can navigate through the options and enable BTF, NETFILTER_ADVANCED, NF_CONNTRACK_MARK features.</li>
+        <li><code>make menuconfig:</code> Opens a text-based menu interface to customize the kernel configuration. The user can navigate through the options and enable or disable specific features.</li>
     </ul>
 
-    <h2>Downloading the Root File System from Amazon S3:</h2>
+    <h3>Downloading the Root File System from Amazon S3:</h3>
     <pre>
     <code>
 wget https://libbpf-ci.s3.us-west-1.amazonaws.com/ppc64le/libbpf-vmtest-rootfs-2023.12.12-bullseye-ppc64el.tar.zst
@@ -47,7 +49,7 @@ wget https://libbpf-ci.s3.us-west-1.amazonaws.com/ppc64le/libbpf-vmtest-rootfs-2
         <li>The URL specifies the location of the root file system on Amazon S3, and <code>wget</code> downloads it.</li>
     </ul>
 
-    <h2>Creating a Rootfs.img File:</h2>
+    <h3>Creating a Rootfs.img File:</h3>
     <pre>
     <code>
 zstd -d libbpf-vmtest-rootfs-2023.12.12-bullseye-ppc64el.tar.zst
@@ -73,10 +75,10 @@ umount mnt
         <li><code>umount mnt:</code> Unmounts the mounted directory.</li>
     </ul>
 
-    <h2>Running QEMU with the Compiled Kernel:</h2>
+    <h3>Running QEMU with the Compiled Kernel:</h3>
     <pre>
     <code>
-qemu-system-ppc64 -nodefaults -display none -serial mon:stdio -m 4G -drive file="rootfs.img",format=raw,index=1,media=disk,if=scsi,cache=none -kernel "/linux/arch/powerpc/boot/zImage" -append "root=/dev/sda rw console=hvc0 single"
+qemu-system-ppc64 -nodefaults -display none -serial mon:stdio -m 4G -drive file="rootfs.img",format=raw,index=1,media=disk,if=scsi,cache=none -kernel "/home/Abhishek/linux/arch/powerpc/boot/zImage" -append "root=/dev/sda rw console=hvc0 single"
     </code>
     </pre>
     <ul>
@@ -93,4 +95,3 @@ qemu-system-ppc64 -nodefaults -display none -serial mon:stdio -m 4G -drive file=
 </body>
 
 </html>
-
