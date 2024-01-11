@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        pre {
+            background-color: #000;
+            color: #fff;
+            padding: 10px;
+            overflow-x: auto;
+        }
+    </style>
+    <title>Kernel Compilation and QEMU Setup</title>
+</head>
+
+<body>
+
+    <h2>Compiling the Kernel for PowerPC Architecture:</h2>
+    <pre>
+    <code>
+ARCH=powerpc make pseries_le_defconfig
+    </code>
+    </pre>
+    <ul>
+        <li><code>ARCH=powerpc:</code> Sets the target architecture to PowerPC.</li>
+        <li><code>make pseries_le_defconfig:</code> Uses the pseries_le_defconfig configuration file to initialize the kernel configuration for the PowerPC pSeries (64-bit little-endian) platform.</li>
+    </ul>
+
+    <h2>Customizing Kernel Configuration:</h2>
+    <pre>
+    <code>
+make menuconfig
+    </code>
+    </pre>
+    <ul>
+        <li><code>make menuconfig:</code> Opens a text-based menu interface to customize the kernel configuration. The user can navigate through the options and enable BTF, NETFILTER_ADVANCED, NF_CONNTRACK_MARK features.</li>
+    </ul>
+
+    <h2>Downloading the Root File System from Amazon S3:</h2>
+    <pre>
+    <code>
+wget https://libbpf-ci.s3.us-west-1.amazonaws.com/ppc64le/libbpf-vmtest-rootfs-2023.12.12-bullseye-ppc64el.tar.zst
+    </code>
+    </pre>
+    <ul>
+        <li><code>wget:</code> A command-line utility to retrieve files from the web.</li>
+        <li>The URL specifies the location of the root file system on Amazon S3, and <code>wget</code> downloads it.</li>
+    </ul>
+
+    <h2>Creating a Rootfs.img File:</h2>
+    <pre>
+    <code>
+zstd -d libbpf-vmtest-rootfs-2023.12.12-bullseye-ppc64el.tar.zst
+touch rootfs.img
+chattr +C rootfs.img
+truncate -s 2G rootfs.img
+mkfs.ext2 -q rootfs.img
+mkdir mnt
+mount -o loop rootfs.img mnt
+tar xvf libbpf-vmtest-rootfs-2023.12.12-bullseye-ppc64el.tar -C mnt/
+umount mnt
+    </code>
+    </pre>
+    <ul>
+        <li><code>zstd -d:</code> Decompresses the compressed root file system archive.</li>
+        <li><code>touch rootfs.img:</code> Creates an empty file named rootfs.img.</li>
+        <li><code>chattr +C rootfs.img:</code> Sets the file as "no copy-on-write" to optimize disk space usage.</li>
+        <li><code>truncate -s 2G rootfs.img:</code> Resizes rootfs.img to 2 gigabytes.</li>
+        <li><code>mkfs.ext2 -q rootfs.img:</code> Formats rootfs.img as an ext2 file system.</li>
+        <li><code>mkdir mnt:</code> Creates a directory named mnt.</li>
+        <li><code>mount -o loop rootfs.img mnt:</code> Mounts the ext2 file system inside rootfs.img to the mnt directory.</li>
+        <li><code>tar xvf libbpf-vmtest-rootfs-2023.12.12-bullseye-ppc64el.tar -C mnt/:</code> Extracts the contents of the root file system into the mounted directory.</li>
+        <li><code>umount mnt:</code> Unmounts the mounted directory.</li>
+    </ul>
+
+    <h2>Running QEMU with the Compiled Kernel:</h2>
+    <pre>
+    <code>
+qemu-system-ppc64 -nodefaults -display none -serial mon:stdio -m 4G -drive file="rootfs.img",format=raw,index=1,media=disk,if=scsi,cache=none -kernel "/linux/arch/powerpc/boot/zImage" -append "root=/dev/sda rw console=hvc0 single"
+    </code>
+    </pre>
+    <ul>
+        <li><code>qemu-system-ppc64:</code> Launches QEMU for PowerPC.</li>
+        <li><code>-nodefaults:</code> Disables default devices.</li>
+        <li><code>-display none:</code> Disables graphical display.</li>
+        <li><code>-serial mon:stdio:</code> Redirects the serial console to standard I/O.</li>
+        <li><code>-m 4G:</code> Sets the guest's memory size to 4 gigabytes.</li>
+        <li><code>-drive file="rootfs.img",format=raw,index=1,media=disk,if=scsi,cache=none:</code> Specifies the root file system as a disk drive in raw format.</li>
+        <li><code>-kernel "/home/Abhishek/linux/arch/powerpc/boot/zImage":</code> Specifies the path to the compiled kernel image.</li>
+        <li><code>-append "root=/dev/sda rw console=hvc0 single":</code> Specifies kernel command line parameters, including the root device, read/write mode, console configuration, and single-user mode. Adjust as needed for your specific setup.</li>
+    </ul>
+
+</body>
+
+</html>
+
