@@ -20,7 +20,7 @@
     <h3>Compiling the Kernel for PowerPC Architecture:</h3>
     <pre>
     <code>
-ARCH=powerpc make pseries_le_defconfig
+        ARCH=powerpc CROSS=powerpc64le-linux-gnu- make -j8
     </code>
     </pre>
     <ul>
@@ -31,7 +31,8 @@ ARCH=powerpc make pseries_le_defconfig
     <h3>Customizing Kernel Configuration:</h3>
     <pre>
     <code>
-make menuconfig
+        ARCH=powerpc make pseries_le_defconfig
+        make menuconfig
     </code>
     </pre>
     <ul>
