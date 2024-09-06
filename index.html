@@ -17,17 +17,6 @@
 
     <h1>Kernel Compilation and QEMU Setup on Powerpc with rootfs</h1>
 
-    <h3>Compiling the Kernel for PowerPC Architecture:</h3>
-    <pre>
-    <code>
-        ARCH=powerpc CROSS=powerpc64le-linux-gnu- make -j8
-    </code>
-    </pre>
-    <ul>
-        <li><code>ARCH=powerpc:</code> Sets the target architecture to PowerPC.</li>
-        <li><code>make pseries_le_defconfig:</code> Uses the pseries_le_defconfig configuration file to initialize the kernel configuration for the PowerPC pSeries (64-bit little-endian) platform.</li>
-    </ul>
-
     <h3>Customizing Kernel Configuration:</h3>
     <pre>
     <code>
@@ -37,6 +26,17 @@
     </pre>
     <ul>
         <li><code>make menuconfig:</code> Opens a text-based menu interface to customize the kernel configuration. The user can navigate through the options and enable or disable specific features.</li>
+    </ul>
+
+    <h3>Compiling the Kernel for PowerPC Architecture:</h3>
+    <pre>
+    <code>
+        ARCH=powerpc CROSS=powerpc64le-linux-gnu- make -j8
+    </code>
+    </pre>
+    <ul>
+        <li><code>ARCH=powerpc:</code> Sets the target architecture to PowerPC.</li>
+        <li><code>make pseries_le_defconfig:</code> Uses the pseries_le_defconfig configuration file to initialize the kernel configuration for the PowerPC pSeries (64-bit little-endian) platform.</li>
     </ul>
 
     <h3>Downloading the Root File System from Amazon S3:</h3>
